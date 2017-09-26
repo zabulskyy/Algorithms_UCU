@@ -1,1 +1,1 @@
-# Learning #algorithms on CS@UCU course
+# Learning algorithms at CS@UCU

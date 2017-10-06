@@ -47,7 +47,7 @@ def count_inversions_in_single_array(input):
             j -= 1
 
     return n
-
+    
 
 print(count_inversions([[3, 2, 10, 6, 9, 1, 5, 7, 4, 8],
                         [3, 2, 10, 6, 9, 1, 5, 7, 4, 8],

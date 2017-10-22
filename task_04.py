@@ -1,3 +1,6 @@
+from copy import deepcopy as dc
+
+
 class BinarySearchTree:
     def __init__(self, preorder_list):
 
@@ -7,8 +10,24 @@ class BinarySearchTree:
         self._create_tree_from_array_pre_order(preorder_list)
         self._from_tree_to_bst()
 
+    def __str__(self):
+        li = [self.root()]
+        st = ""
+        while li:
+            for x in li:
+                st += str(x.value) + " "
+            new_li = list()
+            for x in li:
+                if x.left is not None:
+                    new_li.append(x.left)
+
+                if x.right is not None:
+                    new_li.append(x.right)
+            li = new_li
+            st += "\n"
+        return st
+
     def _from_tree_to_bst(self):
-        from copy import deepcopy as dc
 
         check_tree = dc(self)
         sorted_list = sorted(self._preorder_list_without_zeros)
@@ -65,16 +84,87 @@ class BinarySearchTree:
         return x.parent
 
     def left(self, x):
-        return x.left
+        if x.left is None:
+            return x.left
+        if x.left.value != 0:
+            return x.left
+        return None
 
     def right(self, x):
-        return x.right
+        if x.right is None:
+            return x.right
+        if x.right.value != 0:
+            return x.right
+        return None
 
     def key(self, x):
-        return x.value
+        if x is None:
+            return x.va
+        if x.value != 0:
+            return x.value
+        return None
 
     def find_sum(self, s):
-        pass
+
+        li = []
+
+        # lili = []
+
+        def go_through_branch(root, a, path=None):
+
+            path = dc(path)
+
+            if root is None:
+                return
+
+            if root.value == 0:
+                return
+
+            if path is None:
+                path = []
+
+            path.append(root)
+
+            a -= root.value
+
+            if root.left is not None:
+                go_through_branch(root.left, s)
+            if root.right is not None:
+                go_through_branch(root.right, s)
+
+            if a == 0:
+                # lili.append([x.value for x in path])
+                li.append(path)
+                return
+
+            elif a < 0:
+                return
+
+            if root.right is not None:
+                go_through_branch(root.right, a, path=path)
+
+            if root.left is not None:
+                go_through_branch(root.left, a, path=path)
+
+        def rebuild_references(ref_li):
+            new_list = list()
+            new_list.append(ref_li[-1])
+
+            for _ in range(len(ref_li) - 1):
+                new_list.append(new_list[-1].parent)
+
+            return new_list
+
+        go_through_branch(self.root(), s)
+
+        new_li = []
+        for k in li:
+            k = rebuild_references(k)
+            k.reverse()
+            if k not in new_li:
+                new_li.append(k)
+
+        return new_li
 
 
 class Node:
@@ -85,6 +175,11 @@ class Node:
         self.right = right
 
 
-bst = BinarySearchTree([1, 4, 6, 10, 0, 0, 0, 7, 0, 8, 0, 0, 2, 5, 0, 0, 3, 9, 0, 0, 0])
-print(bst._root.right.value)
-print(bst._root.value)
+bst = BinarySearchTree([1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0])
+print(bst)
+arr = bst.find_sum(4)
+
+for i in arr:
+    for j in i:
+        print(j, j.parent)
+    print("---")

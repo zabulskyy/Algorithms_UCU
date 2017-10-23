@@ -1,6 +1,6 @@
 import sys
 
-sys.setrecursionlimit(10000)
+sys.setrecursionlimit(4500)
 
 
 class BinarySearchTree:
@@ -57,6 +57,11 @@ class BinarySearchTree:
             check_node = check_node.parent
 
     def _dc(self, li):
+        """
+        alternative for deepcopy
+        :param li: list
+        :return: list
+        """
         if li is None:
             return None
         new_li = list()

@@ -1,4 +1,6 @@
-from copy import deepcopy as dc
+import sys
+
+sys.setrecursionlimit(10000)
 
 
 class BinarySearchTree:
@@ -29,7 +31,7 @@ class BinarySearchTree:
 
     def _from_tree_to_bst(self):
 
-        check_tree = dc(self)
+        check_tree = self
         sorted_list = sorted(self._preorder_list_without_zeros)
         node = self._root
         check_node = check_tree._root
@@ -37,22 +39,30 @@ class BinarySearchTree:
         while sorted_list:
 
             while node.left.value != 0:
-                if check_node.left.value == 0:
+                if check_node.left.mark == 0:
                     break
                 node = node.left
                 check_node = check_node.left
 
-            if check_node.value:  # != 0
+            if check_node.mark:  # != 0
                 node.value = sorted_list.pop(0)
-                check_node.value = 0
+                check_node.mark = 0
 
-            if node.right.value != 0 and check_node.right.value != 0:
+            if node.right.value != 0 and check_node.right.mark != 0:
                 node = node.right
                 check_node = check_node.right
                 continue
 
             node = node.parent
             check_node = check_node.parent
+
+    def _dc(self, li):
+        if li is None:
+            return None
+        new_li = list()
+        for i in li:
+            new_li.append(i)
+        return new_li
 
     def _create_tree_from_array_pre_order(self, arr, node=None):
         if not arr:
@@ -112,7 +122,7 @@ class BinarySearchTree:
 
         def go_through_branch(root, a, path=None):
 
-            path = dc(path)
+            path = self._dc(path)
 
             if root is None:
                 return
@@ -169,6 +179,7 @@ class BinarySearchTree:
 
 class Node:
     def __init__(self, value, parent=None, left=None, right=None):
+        self.mark = value
         self.value = value
         self.parent = parent
         self.left = left

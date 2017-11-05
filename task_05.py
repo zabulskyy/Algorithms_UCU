@@ -1,5 +1,7 @@
 import random
 
+ARRAY_SIZE = 1000
+
 
 class HashTable:
     def __str__(self):
@@ -11,7 +13,7 @@ class HashTable:
     def __init__(self, hash_type, values):
         self.hash_type = hash_type
         self.values = values
-        self.table = list(None for _ in range(10))
+        self.table = list(None for _ in range(ARRAY_SIZE))
         self.collisions = 0
         self.fill_table()
 
@@ -44,11 +46,11 @@ class HashTable:
 
 
 def hash_function(n, hash_type, key_list=list()):
-    m = 13
+    m = 6067
     if hash_type == 1:
-        return int(n % m) % 10
+        return int((n % m) % ARRAY_SIZE)
     elif hash_type == 2:
-        return int(m * ((n * 1.61803398875) % 1)) % 10
+        return int(m * n * 1.61803398875 % ARRAY_SIZE)
     return 0
 
 
@@ -60,10 +62,10 @@ class Node:
     def __str__(self):
         if self.next_node is None:
             return str(self.value)
-        return str(self.value) + " --> " + str(self.next_node)
+        return str(self.value) + "\t-->\t " + str(self.next_node)
 
 
-li = list(random.randrange(10) for _ in range(100))
+li = list(random.randrange(1000) for _ in range(1000))
 t1 = HashTable(1, li)
 t2 = HashTable(2, li)
 

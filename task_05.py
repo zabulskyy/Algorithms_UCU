@@ -1,57 +1,83 @@
 import random
 
-ARRAY_SIZE = 1000
-
 
 class HashTable:
     def __str__(self):
         s = ""
         for i in self.table:
-            s += str(i) + "\n"
+            s += str(i) + ("\n" if self.hash_type == 1 or self.hash_type == 2 else " ")
         return s
 
     def __init__(self, hash_type, values):
+        self.array_size = len(values) ** 2
         self.hash_type = hash_type
         self.values = values
-        self.table = list(None for _ in range(ARRAY_SIZE))
+        self.table = list(None for _ in range(self.array_size))
         self.collisions = 0
         self.fill_table()
 
     def fill_table(self):
         if self.hash_type == 1 or self.hash_type == 2:
             for number in self.values:
-                index = hash_function(number, self.hash_type)
+                index = self.hash_function(number)
                 node = self.table[index]
+                new_node = Node(number)
                 if node is None:
-                    self.table[index] = Node(number)
+                    self.table[index] = new_node
                 else:
                     self.collisions += 1
-                    while node.next_node is not None:
-                        node = node.next_node
-                    node.next_node = Node(number)
+                    new_node.next_node = node
+                    self.table[index] = new_node
+
+        if self.hash_type == 3:
+            for number in self.values:
+                index = self.hash_function(number)
+                node = self.table[index]
+                while node is not None:
+                    index += 1
+                    self.collisions += 1
+                    node = self.table[index]
+                self.table[index] = Node(number)
+
+        if self.hash_type == 4:
+            for number in self.values:
+                index = self.hash_function(number)
+                node = self.table[index]
+                add_number = 1
+                while node is not None:
+                    index += add_number ** 2
+                    add_number += 1
+                    self.collisions += 1
+                    node = self.table[index]
+                self.table[index] = Node(number)
 
     def get_collisions_amount(self):
         return self.collisions
 
     def find_sum(self, s):
         if self.hash_type == 1 or self.hash_type == 2:
+            print(self.values, end=" ")
             for number in self.values:
                 number_to_search = s - number
-                number_in_table = self.table[hash_function(number_to_search, self.hash_type)]
+                if number_to_search <= 0:
+                    continue
+                number_in_table = self.table[self.hash_function(number_to_search)]
                 if number_in_table is None:
                     continue
                 else:
                     return number_in_table.value, number
             return None
+        else:
+            for number in self.values:
+                pass
 
-
-def hash_function(n, hash_type, key_list=list()):
-    m = 6067
-    if hash_type == 1:
-        return int((n % m) % ARRAY_SIZE)
-    elif hash_type == 2:
-        return int(m * n * 1.61803398875 % ARRAY_SIZE)
-    return 0
+    def hash_function(self, n, key_list=list()):
+        # m = 6067
+        m = 13
+        if self.hash_type == 1:
+            return int((n % m) % self.array_size)
+        else:
+            return int(m * n * 1.61803398875 % self.array_size)
 
 
 class Node:
@@ -65,12 +91,26 @@ class Node:
         return str(self.value) + "\t-->\t " + str(self.next_node)
 
 
-li = list(random.randrange(1000) for _ in range(1000))
+li = list(i for i in [42, 4, 99, 8, 54, 13, 4, 12, 89])
 t1 = HashTable(1, li)
-t2 = HashTable(2, li)
 
-print(t1)
-print(t2)
+print(t1.find_sum(100))
+print(str(t1))
 
-print(t1.get_collisions_amount())
-print(t2.get_collisions_amount())
+# t2 = HashTable(2, li)
+# t3 = HashTable(3, li)
+# t4 = HashTable(4, li)
+#
+# print(t2)
+# print("---")
+# print(t3)
+# print(t4)
+# print(t3.get_collisions_amount())
+# print(t4.get_collisions_amount())
+
+# print(t2)
+#
+# print(t1.get_collisions_amount())
+# # print(t2.get_collisions_amount())
+#
+# print(t1.find_sum(10))

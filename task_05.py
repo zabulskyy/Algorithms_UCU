@@ -9,10 +9,10 @@ class HashTable:
         return s
 
     def __init__(self, hash_type, values):
-        self.array_size = len(values) ** 2
+        self.m = len(values) * 3
         self.hash_type = hash_type
         self.values = values
-        self.table = list(None for _ in range(self.array_size))
+        self.table = list(None for _ in range(self.m))
         self.collisions = 0
         self.fill_table()
 
@@ -20,64 +20,94 @@ class HashTable:
         if self.hash_type == 1 or self.hash_type == 2:
             for number in self.values:
                 index = self.hash_function(number)
-                node = self.table[index]
-                new_node = Node(number)
-                if node is None:
-                    self.table[index] = new_node
+                node = Node(number)
+                if self.table[index] is None:
+                    self.table[index] = node
                 else:
                     self.collisions += 1
-                    new_node.next_node = node
-                    self.table[index] = new_node
+                    node.next_node = self.table[index]
+                    self.table[index] = node
 
-        if self.hash_type == 3:
+        else:
             for number in self.values:
                 index = self.hash_function(number)
-                node = self.table[index]
-                while node is not None:
-                    index += 1
+                iter = 0
+                while  iter < self.m and self.table[index] is not None:
+                    index = self.hash_function(number, i=iter)
+                    iter += 1
                     self.collisions += 1
-                    node = self.table[index]
-                self.table[index] = Node(number)
+                self.table[index] = number
 
-        if self.hash_type == 4:
+    def find_sum(self, s):
+        if self.hash_type == 1 or self.hash_type == 2:
+            # counter = 0
             for number in self.values:
-                index = self.hash_function(number)
-                node = self.table[index]
-                add_number = 1
-                while node is not None:
-                    index += add_number ** 2
-                    add_number += 1
-                    self.collisions += 1
-                    node = self.table[index]
-                self.table[index] = Node(number)
+                number_to_find = s - number
+                index = self.hash_function(number_to_find)
+                node_to_check = self.table[index]
+                while 1:
+                    if node_to_check is None:
+                        break
+                    if node_to_check.value != number_to_find:
+                        node_to_check = node_to_check.next_node
+                    else:
+                        break
+
+                if node_to_check is not None and node_to_check.value == number_to_find:
+                    return node_to_check.value, number
+
+                        # if counter:
+                        #     return node_to_check.value, number
+                        # else:
+                        #     counter = 1
+                        #     continue
+
+        else:
+            # counter = 0
+            for number in self.values:
+                number_to_find = s - number
+                # if number_to_find <= 0:
+                #     continue
+                index = self.hash_function(number_to_find)
+                number_to_check = self.table[index]
+                iter = 0
+                while 1:
+                    if iter > self.m:
+                        break
+                    if number_to_check is None:
+                        break
+                    if number_to_check != number_to_find:
+                        number_to_check = self.table[self.hash_function(index, iter)]
+                    else:
+                        break
+                    iter += 1
+                if number_to_check is not None and number_to_check == number_to_find:
+                    return number_to_check, number
+                        # if counter:
+                        #     return number_to_check, number
+                        # else:
+                        #     counter = 1
+                        #     continue
+        return None
 
     def get_collisions_amount(self):
         return self.collisions
 
-    def find_sum(self, s):
-        if self.hash_type == 1 or self.hash_type == 2:
-            print(self.values, end=" ")
-            for number in self.values:
-                number_to_search = s - number
-                if number_to_search <= 0:
-                    continue
-                number_in_table = self.table[self.hash_function(number_to_search)]
-                if number_in_table is None:
-                    continue
-                else:
-                    return number_in_table.value, number
-            return None
-        else:
-            for number in self.values:
-                pass
-
-    def hash_function(self, n, key_list=list()):
-        # m = 6067
-        m = 13
+    def hash_function(self, n, i=0):
         if self.hash_type == 1:
-            return int((n % m) % self.array_size)
+            x = n
+        elif self.hash_type == 2:
+            x = n * 0.618
+        elif self.hash_type == 3:
+            x = n + i
+        elif self.hash_type == 4:
+            x = n + i ** 2
         else:
-            return int(m * n * 1.61803398875 % self.array_size)
+            x = self.new_hash_function(n) + i * self.new_hash_function(n + 1)
+        return int(x) % self.m
+
+    def new_hash_function(self, n):
+        return int((n * 0.618) % self.m)
 
 
 class Node:
@@ -91,11 +121,14 @@ class Node:
         return str(self.value) + "\t-->\t " + str(self.next_node)
 
 
-li = list(i for i in [42, 4, 99, 8, 54, 13, 4, 12, 89])
-t1 = HashTable(1, li)
+li = list(random.randrange(99999) for i in range(9999))
+t1 = HashTable(3, li)
 
-print(t1.find_sum(100))
-print(str(t1))
+print(t1)
+print("---")
+print(t1.find_sum(10))
+
+
 
 # t2 = HashTable(2, li)
 # t3 = HashTable(3, li)

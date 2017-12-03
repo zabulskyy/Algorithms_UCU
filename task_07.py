@@ -4,22 +4,25 @@ def knapsack(items, weight):
     :param weight: int
     :return:  total_value, result_items
     """
-    li = [(0, -1) for _ in range(weight + 1)]
+    di = dict()
+    keys = list()
     for item in items:
         v = item[0]
         w = item[1]
-        for i in range(weight, 0, -1):
-            if li[i][0] == 0:
-                continue
-            elif i + w > weight:
+        for i in keys:
+            if i + w > weight:
                 continue
             else:
-                if li[i + w][0] < v + li[i][0]:
-                    li[i + w] = (v + li[i][0], i)
-                    break
-        li[w] = (v, -1)
+                if i + w not in di:
+                    di[i + w] = (v + di[i][0], i)
+                    keys.append(i + w)
+                elif di[i + w][0] < v + di[i][0]:
+                    di[i + w] = (v + di[i][0], i)
+                    keys.append(i + w)
+        keys.append(w)
+        di[w] = (v, -1)
 
-    return li
+    print(di)
 
 
-print(knapsack([(7, 5), (8, 4), (1, 6)], 12))
+knapsack([(7, 5), (8, 4), (1, 6)], 12)

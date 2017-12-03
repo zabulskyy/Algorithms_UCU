@@ -6,7 +6,7 @@ def knapsack(items, weight):
     """
 
     # initialize local variables
-    di = dict()
+    di = dict()  # {weight:(max value, where from, index in original list)}
     keys = set()  # keys of di, must be assigned as dict cannot be dynamically changed during iteration
     k = set()
 
@@ -42,8 +42,8 @@ def knapsack(items, weight):
         elif di[w][0] < v:
             di[w] = (v, -1, item)
             keys.add(w)
-        print(v)
-        print(di)
+        # print(v)
+        # print(di)
 
     # finding max value and its path
     current = di[max(di, key=lambda a: di[a][0])]

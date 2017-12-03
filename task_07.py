@@ -23,12 +23,12 @@ def knapsack(items, weight):
                 continue
             # if i + w is currently zero
             if i + w not in di:
-                di[i + w] = (v + di[i][0], i, item)
+                di[i + w] = (v + di[i][0], i, list(di[i][2]) + [item])
                 k.add(i + w)
 
             # if i + w is less than current v + di[i]
             elif di[i + w][0] < v + di[i][0]:
-                di[i + w] = (v + di[i][0], i, item)
+                di[i + w] = (v + di[i][0], i, list(di[i][2]) + [item])
                 k.add(i + w)
 
         # update keys
@@ -37,24 +37,18 @@ def knapsack(items, weight):
 
         # add current item to itself's cell
         if w not in di:
-            di[w] = (v, -1, item)
+            di[w] = (v, -1, [item])
             keys.add(w)
         elif di[w][0] < v:
-            di[w] = (v, -1, item)
+            di[w] = (v, -1, [item])
             keys.add(w)
-        # print(v)
-        # print(di)
+        print("val: {0}, wei: {1}".format(v, w))
+        print(di)
 
     # finding max value and its path
-    current = di[max(di, key=lambda a: di[a][0])]
-    total_value = current[0]
-    path = list()
-    while 1:
-        path.append(current[2])
-        i = current[1]
-        if i == -1:
-            break
-        current = di[i]
+    max_value = di[max(di, key=lambda a: di[a][0])]
+    total_value = max_value[0]
+    path = max_value[2]
     return total_value, path
 
 
